@@ -10,6 +10,6 @@ class User extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'user_id', 'name', 'date_of_birth', 'height', 'weight'
+        'user_id', 'name', 'date_of_birth', 'height', 'weight', 'email', 'password',
     ];
 }
