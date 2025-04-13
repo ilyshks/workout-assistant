@@ -5,6 +5,7 @@ namespace Auth;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -37,27 +38,67 @@ class RegistrationTest extends TestCase
         $this->actingAs($user);
     }
 
+    public function test_user_cannot_register_with_invalid_email(): void
+    {
+        $userData = [
+            'name' => 'Test User',
+            'email' => 'invalid-email',
+            'password' => 'Password12345!',
+        ];
 
-//    public function test_user_cannot_register_with_existing_email()
-//    {
-//
-//        $existingUser = User::factory()->create();
-//
-//        $userData = [
-//            'name' => 'Test User 2',
-//            'email' => $existingUser->email,
-//            'password' => 'password',
-//        ];
-//
-//
-//        $response = $this->postJson('/register', $userData);
-//
-//        $response->assertStatus(422); //  ожидаем код ошибки валидации
-//
-//        $this->assertDatabaseCount('users', 1); //  проверяем, что новый юзер не был создан
-//
-//
-//    }
+        $response = $this->postJson('/api/register', $userData);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['email']);
+    }
+
+    #[DataProvider('invalidPasswords')]
+    public function test_user_cannot_register_with_weak_password(string $password)
+    {
+        $userData = [
+            'name' => 'Test User',
+            'email' => 'test2@example.com',
+            'password' => $password,
+
+        ];
+
+        $response = $this->postJson('/api/register', $userData);
+        $response->assertStatus(422)->assertJsonValidationErrors(['password']);
+    }
+
+    public static function invalidPasswords(): array
+    {
+
+        return [
+            'Too short' => ['short'],
+            'No uppercase' => ['password123'],
+            'No lowercase' => ['PASSWORD123'],
+            'No number' => ['Password!'],
+            'No special character' => ['Password123'],
+        ];
+
+    }
+
+    public function test_user_cannot_register_with_duplicate_email(): void
+    {
+        $existingUser = User::factory()->create();
+
+        $userData = [
+            'name' => 'Test User 2',
+            'email' => $existingUser->email,
+            'password' => 'P@$$w0rd1',
+        ];
+
+        $response = $this->postJson('/api/register', $userData);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['email']);
+    }
+
+    public function test_user_cannot_register_without_required_fields() {
+        $response = $this->postJson('/api/register', []);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['name',  'email', 'password']);
+
+    }
 
 
 }
