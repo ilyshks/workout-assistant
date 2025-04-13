@@ -20,9 +20,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'date_of_birth',
-        'height',
-        'weight',
     ];
 
     /**
@@ -40,11 +37,7 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'password' => 'hashed',
-        'date_of_birth' => 'date', // Если date_of_birth хранится как DATE
-        'height' => 'integer',     // Если height хранится как целое число
-        'weight' => 'integer',     // Если weight хранится как целое число, или 'decimal' / 'float' при необходимости.
-
+        // 'password' => 'hashed',
     ];
 
     // Relationships (связи с другими моделями):
