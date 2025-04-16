@@ -13,7 +13,7 @@ class ExercisesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $filePath = database_path('exercises.csv');
+        $filePath = database_path('seeders/exercises.csv');
 
         if (!File::exists($filePath)) {
             print("File not found: $filePath\n");
