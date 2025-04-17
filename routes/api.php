@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LaggingMuscleGroupsController;
 use App\Http\Controllers\UserExerciseProgressController;
 use App\Http\Controllers\WorkoutController;
 use Illuminate\Http\Request;
@@ -19,4 +20,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user-exercise-progress', [UserExerciseProgressController::class, 'show']);
 
     Route::post('/workout', [WorkoutController::class, 'store']);
+
+    Route::get('/lagging-muscle-groups', [LaggingMuscleGroupsController::class, 'index']);
 });
