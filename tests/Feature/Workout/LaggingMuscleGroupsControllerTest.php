@@ -24,7 +24,7 @@ class LaggingMuscleGroupsControllerTest extends TestCase
 
     public function test_returns_401_if_user_is_not_authenticated()
     {
-        $response =  $this->getJson('/api/lagging-muscle-groups');
+        $response =  $this->getJson('/api/v1/lagging-muscle-groups');
         $response->assertUnauthorized();
     }
 
@@ -50,7 +50,7 @@ class LaggingMuscleGroupsControllerTest extends TestCase
             ]);
         }
 
-        $response = $this->actingAs($this->user)->getJson('/api/lagging-muscle-groups');
+        $response = $this->actingAs($this->user)->getJson('/api/v1/lagging-muscle-groups');
 
         $response->assertOk();
         $response->assertJson(['lagging_muscle_groups' => $expectedLaggingMuscleGroups]);

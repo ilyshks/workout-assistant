@@ -43,14 +43,14 @@ class WorkoutControllerTest extends TestCase
 
     public function test_returns_401_unauthorized_if_user_is_not_logged_in()
     {
-        $response = $this->postJson('/api/workout', []);
+        $response = $this->postJson('/api/v1/workouts', []);
         $response->assertUnauthorized();
     }
 
     public function test_returns_validation_errors_if_input_data_is_invalid()
     {
         $invalidWorkoutData = ['exercises' => 'notAnArray'];
-        $response =  $this->actingAs($this->user)->postJson('/api/workout', $invalidWorkoutData);
+        $response =  $this->actingAs($this->user)->postJson('/api/v1/workouts', $invalidWorkoutData);
 
         $response->assertUnprocessable();
 
@@ -58,7 +58,7 @@ class WorkoutControllerTest extends TestCase
 
         $invalidWorkoutData =  ['exercises' => [[ 'exercise_name' => null]]];
 
-        $response =  $this->actingAs($this->user)->postJson('/api/workout', $invalidWorkoutData);
+        $response =  $this->actingAs($this->user)->postJson('/api/v1/workouts', $invalidWorkoutData);
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors([
@@ -73,7 +73,7 @@ class WorkoutControllerTest extends TestCase
             'exercise_name' => 'NonExistentExercise',
             'weight' => 1,  'reps' => 1
         ];
-        $response = $this->actingAs($this->user)->postJson('/api/workout', $workoutDataWithNonExistent);
+        $response = $this->actingAs($this->user)->postJson('/api/v1/workouts', $workoutDataWithNonExistent);
         $response->assertStatus(201);
         $response->assertJson([
             'message' => 'Workout saved successfully',
@@ -94,7 +94,7 @@ class WorkoutControllerTest extends TestCase
 
     public function test_creates_new_user_exercise_results_if_it_does_not_exist()
     {
-        $response = $this->actingAs($this->user)->postJson('/api/workout', $this->validWorkoutData);
+        $response = $this->actingAs($this->user)->postJson('/api/v1/workouts', $this->validWorkoutData);
         $response->assertStatus(201);
         $this->assertDatabaseHas('user_exercise_results',
             [
@@ -127,7 +127,7 @@ class WorkoutControllerTest extends TestCase
             'weight' => $newWeight, 'reps' =>  $newReps]]
         ];
 
-        $response = $this->actingAs($this->user)->postJson('/api/workout', $workoutData);
+        $response = $this->actingAs($this->user)->postJson('/api/v1/workouts', $workoutData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('user_exercise_results',  [

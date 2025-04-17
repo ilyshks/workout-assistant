@@ -20,7 +20,7 @@ class RegistrationTest extends TestCase
             'password' => 'Password12345!',
         ];
 
-        $response = $this->postJson('/api/register', $userData);
+        $response = $this->postJson('/api/v1/register', $userData);
 
         $response->assertStatus(200)->assertJsonStructure([
             'access_token',
@@ -46,7 +46,7 @@ class RegistrationTest extends TestCase
             'password' => 'Password12345!',
         ];
 
-        $response = $this->postJson('/api/register', $userData);
+        $response = $this->postJson('/api/v1/register', $userData);
 
         $response->assertStatus(422)->assertJsonValidationErrors(['email']);
     }
@@ -61,7 +61,7 @@ class RegistrationTest extends TestCase
 
         ];
 
-        $response = $this->postJson('/api/register', $userData);
+        $response = $this->postJson('/api/v1/register', $userData);
         $response->assertStatus(422)->assertJsonValidationErrors(['password']);
     }
 
@@ -88,13 +88,13 @@ class RegistrationTest extends TestCase
             'password' => 'P@$$w0rd1',
         ];
 
-        $response = $this->postJson('/api/register', $userData);
+        $response = $this->postJson('/api/v1/register', $userData);
 
         $response->assertStatus(422)->assertJsonValidationErrors(['email']);
     }
 
     public function test_user_cannot_register_without_required_fields() {
-        $response = $this->postJson('/api/register', []);
+        $response = $this->postJson('/api/v1/register', []);
 
         $response->assertStatus(422)->assertJsonValidationErrors(['name',  'email', 'password']);
 

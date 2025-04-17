@@ -28,7 +28,7 @@ class UserExerciseProgressControllerTest extends TestCase
 
     public function test_returns_401_unauthorized_error_if_user_is_not_logged_in()
     {
-        $response = $this->getJson('/api/user-exercise-progress');
+        $response = $this->getJson('/api/v1/user-exercise-progress');
         $response->assertUnauthorized();
         $response->assertJson(['message' => 'Unauthenticated.']);
     }
@@ -36,7 +36,7 @@ class UserExerciseProgressControllerTest extends TestCase
     public function test_returns_404_if_exercise_does_not_exist()
     {
         $response = $this->actingAs($this->user)
-            ->getJson('/api/user-exercise-progress',
+            ->getJson('/api/v1/user-exercise-progress',
                 [
                     'muscle_group' => 'Руки',
                     'exercise_name' => 'Подъем гантелей на бицепс']);
@@ -56,7 +56,7 @@ class UserExerciseProgressControllerTest extends TestCase
         $exercise = $this->exercise;
 
         $response = $this->actingAs($this->user)
-            ->getJson('/api/user-exercise-progress?muscle_group=' . urlencode($exercise->muscle_group) .
+            ->getJson('/api/v1/user-exercise-progress?muscle_group=' . urlencode($exercise->muscle_group) .
                 '&exercise_name=' .  urlencode($exercise->exercise_name) );
 
         $response->assertOk();
@@ -75,7 +75,7 @@ class UserExerciseProgressControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->getJson('/api/user-exercise-progress?muscle_group=' . urlencode($this->exercise->muscle_group) .
+            ->getJson('/api/v1/user-exercise-progress?muscle_group=' . urlencode($this->exercise->muscle_group) .
                 '&exercise_name=' .  urlencode($this->exercise->exercise_name) );
 
         $response->assertOk();
@@ -88,7 +88,7 @@ class UserExerciseProgressControllerTest extends TestCase
 
     {
 
-        $response = $this->actingAs($this->user)->getJson('/api/user-exercise-progress');
+        $response = $this->actingAs($this->user)->getJson('/api/v1/user-exercise-progress');
         $response->assertStatus(422);
 
     }

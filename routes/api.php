@@ -7,19 +7,19 @@ use App\Http\Controllers\WorkoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/v1/register', [AuthController::class, 'register']);
+Route::post('/v1/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
+    Route::get('/v1/users', function (Request $request) {
         return $request->user();
     });
 
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/v1/logout', [AuthController::class, 'logout']);
 
-    Route::get('/user-exercise-progress', [UserExerciseProgressController::class, 'show']);
+    Route::get('/v1/user-exercise-progress', [UserExerciseProgressController::class, 'show']);
 
-    Route::post('/workout', [WorkoutController::class, 'store']);
+    Route::post('/v1/workouts', [WorkoutController::class, 'store']);
 
-    Route::get('/lagging-muscle-groups', [LaggingMuscleGroupsController::class, 'index']);
+    Route::get('/v1/lagging-muscle-groups', [LaggingMuscleGroupsController::class, 'index']);
 });

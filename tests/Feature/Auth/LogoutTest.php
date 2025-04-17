@@ -20,17 +20,17 @@ class LogoutTest extends TestCase
 
         $this->assertDatabaseHas('personal_access_tokens', ['name' => 'test-token']);
 
-        $response = $this->withToken($token)->postJson('/api/logout');
+        $response = $this->withToken($token)->postJson('/api/v1/logout');
 
         $response->assertStatus(200)->assertJson(['message' => 'Выход из системы прошёл успешно']);
         $this->assertDatabaseMissing('personal_access_tokens', ['name' => 'test-token']);
-        // $this->withToken($token)->getJson('/api/user')->assertStatus(401);
+        // $this->withToken($token)->getJson('/api/v1/users')->assertStatus(401);
     }
 
     public function test_unauthenticated_user_cannot_logout(): void
     {
 
-        $this->postJson('/api/logout')->assertStatus(401);
+        $this->postJson('/api/v1/logout')->assertStatus(401);
 
     }
 }

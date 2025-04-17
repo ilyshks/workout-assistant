@@ -18,7 +18,7 @@ class LoginTest extends TestCase
         ]);
 
         $loginData = ['email' => $user->email, 'password' => 'password'];
-        $response = $this->postJson('/api/login', $loginData);
+        $response = $this->postJson('/api/v1/login', $loginData);
 
         $response->assertStatus(200)
             ->assertJsonStructure(['access_token',  'token_type']);
@@ -31,7 +31,7 @@ class LoginTest extends TestCase
         ]);
 
         $loginData = ['email' => $user->email, 'password' => 'wrong-password'];
-        $response = $this->postJson('/api/login', $loginData);
+        $response = $this->postJson('/api/v1/login', $loginData);
         $response->assertStatus(422)
         ->assertJsonValidationErrors(['password']);
     }
@@ -40,14 +40,14 @@ class LoginTest extends TestCase
     {
         $loginData = ['email' => 'wrong-email', 'password' => 'password'];
 
-        $this->postJson('/api/login',  $loginData)->assertStatus(422)
+        $this->postJson('/api/v1/login',  $loginData)->assertStatus(422)
         ->assertJsonValidationErrors(['email']);
 
     }
 
     public function test_user_cannot_login_without_required_fields(): void
     {
-        $this->postJson('/api/login', [])->assertStatus(422)
+        $this->postJson('/api/v1/login', [])->assertStatus(422)
             ->assertJsonValidationErrors(['email', 'password']);
 
     }
