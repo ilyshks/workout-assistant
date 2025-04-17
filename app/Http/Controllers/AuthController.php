@@ -19,7 +19,9 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer', ]);
+        return response()->json([
+            'data' => ['access_token' => $token, 'token_type' => 'Bearer'],
+        ], 201);
     }
 
     public function login(Request $request): \Illuminate\Http\JsonResponse
@@ -32,29 +34,46 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user) {
+        if (!$user) {
             return response()->json([
-                'errors' => ['email' =>  ['Пользователь не найден'] ],
-                'message' => 'Нет пользователя с таким email'
+                'errors' => [
+                    [
+                        'code' => 'user_not_found',
+                        'message' => 'Пользователь не найден',
+                    ],
+                ],
+                'message' => 'Пользователь не найден.',
+                'meta' => null
             ], 404);
-
         }
 
-        if (! Hash::check($request->password, $user->password)) {
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json([
-                'errors' => ['password' =>  ['Неверный пароль'] ],
-                'message' => 'Вы ввели неверный пароль'
-            ], 422);
+                'errors' => [
+                    [
+                        'code' => 'invalid_password',
+                        'message' => 'Неверный пароль',
+                    ],
+                ],
+                'message' => 'Неверный пароль.',
+                'meta' => null
+            ], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer', ]);
+        return response()->json([
+            'data' => ['access_token' => $token, 'token_type' => 'Bearer'],
+            'meta' => null
+        ], 200);
 
     }
 
     public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Выход из системы прошёл успешно'], 200);
+        return response()->json([
+            'data' => null,
+            'meta' => null
+        ], 200);
     }
 }

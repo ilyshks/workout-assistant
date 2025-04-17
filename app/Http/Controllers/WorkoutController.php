@@ -21,15 +21,28 @@ class WorkoutController extends Controller
 
             $user = Auth::user();
             if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json([
+                    'errors' => [['code' => 'unauthorized', 'message' => 'Unauthorized']],
+                    'data' => null,
+                    'meta' => null
+                ], 401);
             }
 
-            $request->validate([
-                'exercises' => 'required|array',
-                'exercises.*.exercise_name' => 'required|string',
-                'exercises.*.weight' => 'required|numeric',
-                'exercises.*.reps' => 'required|integer'
-            ]);
+            try {
+                $validated = $request->validate([
+                    'exercises' => 'required|array',
+                    'exercises.*.exercise_name' => 'required|string',
+                    'exercises.*.weight' => 'required|numeric',
+                    'exercises.*.reps' => 'required|integer'
+                ]);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                return response()->json([
+                    'errors' =>  [array('code' => 'validation_error',
+                        'message' => $e->getMessage(),  'meta' =>  $e->errors())],
+                    'data' => null,
+                    'meta' => null,
+                ], 422);
+            }
 
             foreach ($request->input('exercises', []) as $exerciseData) {
                 $exercise = Exercise::where('exercise_name', $exerciseData['exercise_name'])->first();
@@ -69,11 +82,18 @@ class WorkoutController extends Controller
             }
             DB::commit();
             return response()->json([
-                'message' => 'Workout saved successfully',
-                'ignored_exercises' => $ignoredExercises], 201);
+                'data' => ['message' => 'Workout saved successfully', 'ignored_exercises' => $ignoredExercises],
+                'meta' => null,
+                'errors' => null
+            ], 201);
         } catch (QueryException  $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
+            return response()->json([
+                'errors' => [['code' => 'database_error', 'message' => 'Database error',
+                    'meta' => ['details' => $e->getMessage()]]],
+                'data' => null,
+                'meta' => null,
+            ], 500);
         }
     }
 }

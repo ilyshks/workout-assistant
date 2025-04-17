@@ -50,20 +50,19 @@ class WorkoutControllerTest extends TestCase
     public function test_returns_validation_errors_if_input_data_is_invalid()
     {
         $invalidWorkoutData = ['exercises' => 'notAnArray'];
-        $response =  $this->actingAs($this->user)->postJson('/api/v1/workouts', $invalidWorkoutData);
+        $response = $this->actingAs($this->user)->postJson('/api/v1/workouts', $invalidWorkoutData);
 
-        $response->assertUnprocessable();
+        $response->assertStatus(422)
+        ->assertJsonPath('errors.0.code', 'validation_error')
+            ->assertJsonPath('data', null);
 
-        $response->assertJsonValidationErrors(['exercises']);
+        $invalidWorkoutData = ['exercises' => [[ 'exercise_name' => null]]];
 
-        $invalidWorkoutData =  ['exercises' => [[ 'exercise_name' => null]]];
+        $response = $this->actingAs($this->user)->postJson('/api/v1/workouts', $invalidWorkoutData);
 
-        $response =  $this->actingAs($this->user)->postJson('/api/v1/workouts', $invalidWorkoutData);
-
-        $response->assertUnprocessable();
-        $response->assertJsonValidationErrors([
-            'exercises.0.exercise_name', 'exercises.0.weight',  'exercises.0.reps'
-        ]);
+        $response->assertStatus(422)
+        ->assertJsonPath('errors.0.code', 'validation_error')
+            ->assertJsonPath('data', null);
     }
 
     public function test_ignores_non_existent_exercises_and_saves_workout()
@@ -75,11 +74,8 @@ class WorkoutControllerTest extends TestCase
         ];
         $response = $this->actingAs($this->user)->postJson('/api/v1/workouts', $workoutDataWithNonExistent);
         $response->assertStatus(201);
-        $response->assertJson([
-            'message' => 'Workout saved successfully',
-
-            'ignored_exercises' => ['NonExistentExercise']
-        ]);
+        $response->assertJsonPath('data.message', 'Workout saved successfully');
+        $response->assertJsonPath('data.ignored_exercises', ['NonExistentExercise']);
         $this->assertDatabaseHas('user_exercise_results',
             [
                 'user_id' => $this->user->id,

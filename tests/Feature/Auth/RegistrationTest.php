@@ -22,9 +22,10 @@ class RegistrationTest extends TestCase
 
         $response = $this->postJson('/api/v1/register', $userData);
 
-        $response->assertStatus(200)->assertJsonStructure([
+        $response->assertStatus(201)->assertJsonStructure([
+            'data' =>[
             'access_token',
-            'token_type',
+            'token_type']
         ]);
 
         $this->assertDatabaseHas('users', [

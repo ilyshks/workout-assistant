@@ -21,7 +21,7 @@ class LoginTest extends TestCase
         $response = $this->postJson('/api/v1/login', $loginData);
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['access_token',  'token_type']);
+            ->assertJsonStructure(['data' => ['access_token', 'token_type']]);
     }
 
     public function test_user_cannot_login_with_incorrect_password(): void
@@ -32,8 +32,10 @@ class LoginTest extends TestCase
 
         $loginData = ['email' => $user->email, 'password' => 'wrong-password'];
         $response = $this->postJson('/api/v1/login', $loginData);
-        $response->assertStatus(422)
-        ->assertJsonValidationErrors(['password']);
+        dump($response->json());
+        $response->assertStatus(401)
+            ->assertJsonPath('errors.0.code', 'invalid_password')
+            ->assertJsonPath('errors.0.message', 'Неверный пароль');
     }
 
     public function test_user_cannot_login_with_incorrect_email(): void

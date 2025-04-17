@@ -22,7 +22,10 @@ class LogoutTest extends TestCase
 
         $response = $this->withToken($token)->postJson('/api/v1/logout');
 
-        $response->assertStatus(200)->assertJson(['message' => 'Выход из системы прошёл успешно']);
+        $response->assertStatus(200)
+            ->assertJsonPath('data', null)
+            ->assertJsonPath('meta', null);
+
         $this->assertDatabaseMissing('personal_access_tokens', ['name' => 'test-token']);
         // $this->withToken($token)->getJson('/api/v1/users')->assertStatus(401);
     }

@@ -13,19 +13,38 @@ class UserExerciseProgressController extends Controller
     {
         $user = Auth::user();
         if (!$user) {
-            return response()->json(['error' => 'Пользователь не авторизован'], 401);
+            return response()->json([
+                'errors' => [['code' => 'unauthorized', 'message' => 'Пользователь не авторизован']],
+                'data' => null,
+                'meta' => null,
+            ], 401);
         }
-        $request->validate([
-            'muscle_group' => 'required|string',
-            'exercise_name' => 'required|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'muscle_group' => 'required|string',
+                'exercise_name' => 'required|string',
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' =>  [array('code' => 'validation_error', 'message' => $e->getMessage(),  'meta' =>  $e->errors())],
+                'data' => null,
+                'meta' => null,
+
+            ], 422);
+
+        }
 
         $exercise = Exercise::where('muscle_group', $request->input('muscle_group'))
             ->where('exercise_name', $request->input('exercise_name'))
             ->first();
 
         if (!$exercise) {
-            return response()->json(['message' => 'Упражнение не найдено'], 404);
+            return response()->json([
+                'errors' => [['code' => 'exercise_not_found', 'message' => 'Упражнение не найдено']],
+                'data' => null,
+                'meta' => null,
+            ], 404);
         }
 
         $userExerciseResult = UserExerciseResult::where('user_id', $user->id)
@@ -33,10 +52,15 @@ class UserExerciseProgressController extends Controller
             ->first();
 
         if ($userExerciseResult) {
-            return response()->json($userExerciseResult); // Возвращаем все поля результата
-
+            return response()->json([
+                'data' => $userExerciseResult,
+                'meta' => null,
+            ]);
         } else {
-            return response()->
-            json(['message' => 'У пользователя нет результатов по этому упражнению', 'data' => null ], 200); }
+            return response()->json([
+                'data' => null,
+                'meta' => null,
+            ], 200);
+        }
     }
 }

@@ -53,7 +53,7 @@ class LaggingMuscleGroupsControllerTest extends TestCase
         $response = $this->actingAs($this->user)->getJson('/api/v1/lagging-muscle-groups');
 
         $response->assertOk();
-        $response->assertJson(['lagging_muscle_groups' => $expectedLaggingMuscleGroups]);
+        $response->assertJson(['data' => ['lagging_muscle_groups' => $expectedLaggingMuscleGroups]]);
     }
 
     public static function laggingMuscleGroupsDataProvider(): array

@@ -13,7 +13,14 @@ class LaggingMuscleGroupsController extends  Controller
     {
         $user = Auth::user();
         if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json([
+                'errors' => [
+                    ['code' => 'unauthorized', 'message' => 'Unauthorized']
+                ],
+                'message' => 'Unauthorized',
+                'meta' => null,
+                'data' => null,
+            ], 401);
         }
         $allMuscleGroups = DB::table('exercises')->pluck('muscle_group')->unique()->toArray();
 
@@ -48,7 +55,11 @@ class LaggingMuscleGroupsController extends  Controller
 
         asort($weightedMuscleGroups);
         $laggingMuscleGroups = array_keys($weightedMuscleGroups);
-        return response()->json(['lagging_muscle_groups' => $laggingMuscleGroups ], 200);
+        return response()->json([
+            'data' => ['lagging_muscle_groups' => $laggingMuscleGroups],
+            'meta' => null,
+            'errors' => null
+        ], 200);
     }
     private function calculateWeight(string  $lastUpdated, int  $exercisesCount): float
     {
