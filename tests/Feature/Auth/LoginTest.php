@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +32,7 @@ class LoginTest extends TestCase
 
         $loginData = ['email' => $user->email, 'password' => 'wrong-password'];
         $response = $this->postJson('/api/v1/login', $loginData);
-        dump($response->json());
+
         $response->assertStatus(401)
             ->assertJsonPath('errors.0.code', 'invalid_password')
             ->assertJsonPath('errors.0.message', 'Неверный пароль');
