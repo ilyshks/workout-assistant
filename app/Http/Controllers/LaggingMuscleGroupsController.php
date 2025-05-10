@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class LaggingMuscleGroupsController extends  Controller
+class LaggingMuscleGroupsController extends Controller
 {
     public function index(Request $request): \Illuminate\Http\JsonResponse
     {

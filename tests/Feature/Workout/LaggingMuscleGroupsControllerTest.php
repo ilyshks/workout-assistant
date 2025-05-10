@@ -5,7 +5,6 @@ namespace Tests\Feature\Workout;
 use App\Models\Exercise;
 use App\Models\User;
 use App\Models\UserExerciseResult;
-use Carbon\Carbon;
 use Database\Seeders\ExercisesTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -24,7 +23,7 @@ class LaggingMuscleGroupsControllerTest extends TestCase
 
     public function test_returns_401_if_user_is_not_authenticated()
     {
-        $response =  $this->getJson('/api/v1/lagging-muscle-groups');
+        $response = $this->getJson('/api/v1/lagging-muscle-groups');
         $response->assertUnauthorized();
     }
 
