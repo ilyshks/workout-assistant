@@ -62,7 +62,13 @@
    ```bash
    php artisan key:generate
    ```
-5. **Запуск локального сервера:**
+5. **Заполнение таблицы `exercises`:**
+   
+   Добавьте в таблицу свои данные или воспользуйтесь `ExercisesTableSeeder`.
+    ```bash
+    php artisan db:seed --class=ExercisesTableSeeder
+    ```
+6. **Запуск локального сервера:**
    ```bash
    php artisan serve
    ```
@@ -70,20 +76,36 @@
 
 ## API
 
-### Основные эндпоинты:
-- **POST /api/v1/register**  
-  **Описание:** Регистрирует нового пользователя.  
-  **Параметры:** name, email, password
+### Основные endpoint'ы:
+
+- **POST /api/v1/register**
+  
+  **Описание**: Регистрирует нового пользователя.
+  **Параметры**:
+    - `name` (строка, обязательный)
+    - `email` (строка, обязательный, уникальный)
+    - `password` (строка, обязательный, минимум 8 символов, верхний и нижний регистры, цифры, спец. символы)
+
+  **Ответ (201 Created)**:
+  ```json
+  {
+    "data": {
+      "access_token": "<sanctum_token>",
+      "token_type": "Bearer"
+    }
+  }
+  ```
 
 - **POST /api/v1/login**  
   **Описание:** Выполняет аутентификацию пользователя и возвращает токен Sanctum.  
   **Параметры:**
-    - `email` (string, required)
-    - `password` (string, required)
+    - `email` (string, обязательный)
+    - `password` (string, обязательный)
   
   **Заголовки:**
   - `Accept: application/json`
-    **Ответ (200 OK):**
+
+  **Ответ (200 OK):**
   ```json
   {
     "data": {
@@ -95,21 +117,140 @@
 
 - **POST /api/v1/logout**  
   **Описание:** Инвалидирует текущий токен доступа.
+  **Заголовки**:
+  - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
+  - `Accept: application/json`
+  
+  **Параметры**: Нет
 
 - **GET /api/v1/users**  
   **Описание:** Возвращает информацию об аутентифицированном пользователе.
+  **Заголовки**:
+  - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
+  - `Accept: application/json`
+  
+  **Параметры**: Нет
 
+  **Ответ (200 OK):**
+  ```json
+    {
+      "id": 4,
+      "name": "Test User 3",
+      "email": "example3@mail.ru",
+      "created_at": "2025-05-10T17:16:26.000000Z",
+      "updated_at": "2025-05-10T17:16:26.000000Z"
+    }
+  ```
 - **GET /api/v1/exercise/by-name/{exercise_name}/guide**  
-    **Описание:** Возвращает ссылку на гайд по правильному выполнению упражнения.
+  **Описание:** Возвращает ссылку на гайд по правильному выполнению упражнения.
+  **Заголовки**:
+    - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
+    - `Accept: application/json`
+  
+  **Параметры**:
+    - `{exercise_name}` (строка) - название упражнения.
 
+- **Ответ (200 OK):**
+    ```json
+    {
+      "data": {
+        "tutorial": "<ссылка на видео>"
+      },
+      "errors": null,
+      "meta": null
+    }
+    ```
 - **GET /api/v1/user-exercise-progress**  
   **Описание:** Возвращает результаты пользователя в упражнении.
+  **Заголовки**:
+    - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
+    - `Accept: application/json`
+  
+  **Параметры**:
+    - `muscle_group` (string, обязательный)
+    - `exercise_name` (string, обязательный)
+  
+  **Ответ (200 OK):**
+    ```json
+    {
+      "data": {
+        "id": 1,
+        "user_id": 4,
+        "exercise_id": 1,
+        "record_weight": 60,
+        "record_repeats": 8,
+        "last_weight": 60,
+        "last_repeats": 8,
+        "created_at": "2025-05-11T11:13:51.000000Z",
+        "updated_at": "2025-05-11T11:13:51.000000Z"
+      },
+      "meta": null
+    }
+    ```
 
 - **POST /api/v1/workouts**  
   **Описание:** Сохраняет информацию о тренировке в базу данных.
+  **Заголовки**:
+    - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
+    - `Accept: application/json`
 
+  **Параметры**:
+    - `exercises` (array, обязательный)
+
+  **Пример Body**:
+  ```json
+  {
+    "exercises": [
+      {
+        "exercise_name": "Приседания со штангой на спине",
+        "weight": 60,
+        "reps": 8
+      },
+      {
+        "exercise_name": "Жим штанги лёжа",
+        "weight": 70,
+        "reps": 10
+      }
+    ]
+  }
+  ```
+  **Ответ (201 Created):**
+  ```json
+  {
+    "data": {
+      "message": "Workout saved successfully",
+      "ignored_exercises": []
+    },
+    "meta": null,
+    "errors": null
+  }
+  ```
 - **GET /api/v1/lagging-muscle-groups**  
   **Описание:** Возвращает список отстающих групп мышц отсортированный от наиболее отстающих к наименее отстающим.
+
+  **Заголовки**:
+    - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
+    - `Accept: application/json`
+
+  **Параметры**: Нет
+
+  **Ответ (200 OK):**
+  ```json
+    {
+      "data": {
+        "lagging_muscle_groups": [
+            "Спина",
+            "Плечи",
+            "Руки",
+            "Пресс",
+            "Грудь",
+            "Ноги и Ягодицы"
+        ]
+      },
+      "meta": null,
+      "errors": null
+  }
+  ```
 
 ## Тестирование
 
