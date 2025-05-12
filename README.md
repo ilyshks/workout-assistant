@@ -28,7 +28,7 @@
 
 ## Способы запуска сервиса
 
-### Запуск
+### Запуск без Docker
 
 1. **Настройка `php.ini`**
 
@@ -73,6 +73,41 @@
    php artisan serve
    ```
    Сервис будет доступен по адресу: [http://localhost:8000](http://localhost:8000)
+
+### Запуск через Docker
+#### Требования
+- Docker
+- Docker-compose
+
+1. **Настройка окружения**:
+   Проверьте `.env`, следующие значения должны быть заданы:
+    ```
+    POSTGRES_DB=your_container_db_name
+    POSTGRES_USER=your_container_db_username
+    POSTGRES_PASSWORD=your_container_db_password
+    PGADMIN_DEFAULT_EMAIL=your_container_pgadmin_login_email
+    PGADMIN_DEFAULT_PASSWORD=your_container_pgadmin_password
+    ```
+
+2. **Запуск локального сервера**:
+   Создать и запустить все требуемые контейнеры:
+    ```bash
+    docker-compose up -d --build
+    ```
+   После этого, сам сервис и pgadmin станут доступны на портах, указанных в docker-compose.yml.
+
+   Для остановки сервиса используется команда:
+    ```bash
+    docker-compose stop
+    ```
+   Для повторного запуска:
+    ```bash
+    docker-compose start
+    ```
+   Для остановки и удаления всех созданных контейнеров:
+    ```bash
+    docker-compose down
+    ```
 
 ## API
 
