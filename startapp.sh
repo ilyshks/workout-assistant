@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-env
-
 # Проверка доступности PostgreSQL
 until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME" -d "$DB_DATABASE"; do
   echo "Ожидание готовности PostgreSQL..."
