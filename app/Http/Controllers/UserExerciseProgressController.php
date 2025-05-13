@@ -19,21 +19,10 @@ class UserExerciseProgressController extends Controller
                 'meta' => null,
             ], 401);
         }
-        try {
-            $validated = $request->validate([
-                'muscle_group' => 'required|string',
-                'exercise_name' => 'required|string',
-            ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'errors' =>  [array('code' => 'validation_error', 'message' => $e->getMessage(),  'meta' =>  $e->errors())],
-                'data' => null,
-                'meta' => null,
-
-            ], 422);
-
-        }
+        $validated = $request->validate([
+            'muscle_group' => 'required|string',
+            'exercise_name' => 'required|string',
+        ]);
 
         $exercise = Exercise::where('muscle_group', $request->input('muscle_group'))
             ->where('exercise_name', $request->input('exercise_name'))
