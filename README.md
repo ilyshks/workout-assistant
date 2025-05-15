@@ -176,7 +176,7 @@
       "updated_at": "2025-05-10T17:16:26.000000Z"
     }
   ```
-- **GET /api/v1/exercise/by-name/{exercise_name}/guide**  
+- **GET /api/v1/exercises/by-name/{exercise_name}/guide**  
   **Описание:** Возвращает ссылку на гайд по правильному выполнению упражнения.
   **Заголовки**:
     - `Authorization: Bearer {ваш_токен}` - Токен доступа пользователя.
